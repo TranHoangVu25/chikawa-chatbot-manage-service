@@ -1,8 +1,10 @@
 package com.example.chatbot_manage_service.service;
 
+import com.example.chatbot_manage_service.dto.request.ChatRequest;
 import com.example.chatbot_manage_service.dto.response.ApiResponse;
 import com.example.chatbot_manage_service.models.Conversation;
 import com.example.chatbot_manage_service.repositories.ConversationRepository;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,4 +26,6 @@ public interface ChatBotManageService {
 
     //xóa theo id conversation
     ResponseEntity<ApiResponse<?>>  deleteConversation(String id);
+
+    String chat(ChatRequest request);
 }

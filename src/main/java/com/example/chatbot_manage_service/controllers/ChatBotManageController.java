@@ -1,5 +1,6 @@
 package com.example.chatbot_manage_service.controllers;
 
+import com.example.chatbot_manage_service.dto.request.ChatRequest;
 import com.example.chatbot_manage_service.dto.response.ApiResponse;
 import com.example.chatbot_manage_service.models.Conversation;
 import com.example.chatbot_manage_service.service.ChatBotManageService;
@@ -19,6 +20,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class ChatBotManageController {
     ChatBotManageService chatBotManageService;
+    ChatBotManageService chatService;
 
     @GetMapping
     public ApiResponse<List<Conversation>> getAllConversation(){
@@ -37,5 +39,10 @@ public class ChatBotManageController {
             @PathVariable String id
     ){
         return chatBotManageService.deleteConversation(id);
+    }
+
+    @PostMapping("/chat")
+    String chat(@RequestBody ChatRequest request) {
+        return chatService.chat(request);
     }
 }

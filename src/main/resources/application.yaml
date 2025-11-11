@@ -1,3 +1,5 @@
+server:
+  port: 8083
 spring:
   application:
     name: chatbot_manage_service
@@ -5,5 +7,12 @@ spring:
     mongodb:
       uri: mongodb+srv://vu:123@cluster0.53inm28.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
       database: inventory_database
-server:
-  port: 8083
+  ai:
+    openai:
+      api-key: "AIzaSyBImyKDiX_1FUj1spGRqqDcBiGk16tpRTA"
+      chat:
+        base-url: https://generativelanguage.googleapis.com
+        completions-path: /v1beta/openai/chat/completions
+        options:
+          model: gemini-2.0-flash
+
