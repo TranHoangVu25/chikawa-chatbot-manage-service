@@ -3,6 +3,7 @@ package com.example.chatbot_manage_service.controllers;
 import com.example.chatbot_manage_service.dto.request.ChatRequest;
 import com.example.chatbot_manage_service.dto.response.ApiResponse;
 import com.example.chatbot_manage_service.models.Conversation;
+import com.example.chatbot_manage_service.repositories.ConversationRepository;
 import com.example.chatbot_manage_service.service.ChatBotManageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class ChatBotManageController {
     ChatBotManageService chatBotManageService;
-    ChatBotManageService chatService;
+    ConversationRepository conversationRepository;
 
     @GetMapping
     public ApiResponse<List<Conversation>> getAllConversation(){
@@ -43,6 +45,28 @@ public class ChatBotManageController {
 
     @PostMapping("/chat")
     String chat(@RequestBody ChatRequest request) {
-        return chatService.chat(request);
+        return chatBotManageService.chat(request);
+    }
+
+    @PostMapping("/analyze/{id}")
+    public ResponseEntity<?> analyzeConversation(@PathVariable String id) {
+        // 1️⃣ Kiểm tra tồn tại conversation
+        Conversation conversation = conversationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+
+        // 2️⃣ Gọi service để phân tích hội thoại (tự lưu DB bên trong)
+        int status = chatBotManageService.analyzeConversation(id);
+
+        // 3️⃣ Lấy lại dữ liệu sau khi cập nhật
+        conversation = conversationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Conversation not found after analysis"));
+
+        // 4️⃣ Trả về kết quả
+        return ResponseEntity.ok(Map.of(
+                "conversationId", conversation.getId(),
+                "status", status,
+                "analyzed", conversation.getAnalyzed(),
+                "message", (status == 2 ? "potential" : status == 3 ? "spam" : "undefined")
+        ));
     }
 }
