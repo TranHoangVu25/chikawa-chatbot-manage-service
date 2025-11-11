@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  chatbot-service:
+    build: .
+    container_name: chatbot-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/chatbotdb
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongo_chat_service
+    ports:
+      - "27018:27018"
+    environment:
+      MONGO_INITDB_DATABASE: chatbotdb
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

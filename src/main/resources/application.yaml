@@ -1,3 +1,9 @@
 spring:
   application:
     name: chatbot_manage_service
+  data:
+    mongodb:
+      uri: mongodb+srv://vu:123@cluster0.53inm28.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      database: inventory_database
+port:
+  8083
