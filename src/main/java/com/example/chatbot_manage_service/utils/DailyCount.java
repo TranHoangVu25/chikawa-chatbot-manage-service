@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class DailyCount {
     private String date;  // yyyy-MM-dd
     private long count;
+    private String dayOfWeek; // thêm field này
 }

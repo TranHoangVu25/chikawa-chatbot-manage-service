@@ -1,10 +1,10 @@
 package com.example.chatbot_manage_service.controllers;
 
+import com.example.chatbot_manage_service.dto.ConversationOverviewDTO;
 import com.example.chatbot_manage_service.dto.ConversationStatsDTO;
 import com.example.chatbot_manage_service.dto.request.ChatRequest;
 import com.example.chatbot_manage_service.dto.response.ApiResponse;
 import com.example.chatbot_manage_service.models.Conversation;
-import com.example.chatbot_manage_service.repositories.ConversationRepository;
 import com.example.chatbot_manage_service.service.ChatBotManageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,12 +22,13 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class ChatBotManageController {
     ChatBotManageService chatBotManageService;
-    ConversationRepository conversationRepository;
 
     //get all conservation
     @GetMapping
     public ApiResponse<List<Conversation>> getAllConversation(){
-        return chatBotManageService.getAllConversation();
+        return ApiResponse.<List<Conversation>>builder()
+                .result(chatBotManageService.getAllConversation())
+                .build();
     }
 
     //get all conversation follow user id
@@ -60,8 +60,22 @@ public class ChatBotManageController {
        return chatBotManageService.analyzeConversation(id);
     }
 
+    //statistic conversation
     @GetMapping("/statistic")
     public ConversationStatsDTO getConversationStatistics(){
         return chatBotManageService.getConversationStatistics();
     }
+
+    @GetMapping("/overview")
+    public ApiResponse<ConversationOverviewDTO> getConversationOverview() {
+        ConversationStatsDTO stats = chatBotManageService.getConversationStatistics();
+        List<Conversation> conversations = chatBotManageService.getAllConversation();
+
+        ConversationOverviewDTO overview = new ConversationOverviewDTO(stats, conversations);
+
+        return ApiResponse.<ConversationOverviewDTO>builder()
+                .result(overview)
+                .build();
+    }
+
 }

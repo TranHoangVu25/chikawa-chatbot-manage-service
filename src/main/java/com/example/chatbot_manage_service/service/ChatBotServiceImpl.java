@@ -15,8 +15,10 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 @Service
 @Slf4j
@@ -30,10 +32,8 @@ public class ChatBotServiceImpl implements ChatBotManageService{
     }
 
     @Override
-    public ApiResponse<List<Conversation>> getAllConversation() {
-        return ApiResponse.<List<Conversation>>builder()
-                .result(conversationRepository.findAll())
-                .build();
+    public List<Conversation> getAllConversation() {
+        return conversationRepository.findAll();
     }
 
     @Override
@@ -170,8 +170,16 @@ public class ChatBotServiceImpl implements ChatBotManageService{
                         .build());
     }
 
-    public ConversationStatsDTO getConversationStatistics(){
-        return conversationRepository.getConversationStatistics();
-    }
+        public ConversationStatsDTO getConversationStatistics(){
+            ConversationStatsDTO dto = conversationRepository.getConversationStatistics();
+
+            dto.getDailyStats().forEach(stat -> {
+                LocalDate date = LocalDate.parse(stat.getDate());
+                String dayOfWeek = date.getDayOfWeek()
+                        .getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+                stat.setDayOfWeek(dayOfWeek);
+            });
+            return dto;
+        }
 }
 

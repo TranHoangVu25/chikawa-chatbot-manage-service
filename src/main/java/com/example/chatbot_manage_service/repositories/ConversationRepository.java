@@ -62,7 +62,4 @@ public interface ConversationRepository extends MongoRepository<Conversation,Str
                     "} }"
     })
     ConversationStatsDTO getConversationStatistics();
-
-
-
 }

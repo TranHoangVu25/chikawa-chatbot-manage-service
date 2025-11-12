@@ -14,7 +14,7 @@ import java.util.Map;
 public interface ChatBotManageService {
     //hiển thị tất cả các cuộc hội thoại
     //scenario: ấn vào xem chi tiết thì hiển thị ra cuộc trò chuyện đó
-    ApiResponse<List<Conversation>> getAllConversation();
+    List<Conversation> getAllConversation();
 
 /**
     scenario: trong khi xem chi tiết cuộc hội thoại có thể xem tất cả các
@@ -22,10 +22,11 @@ public interface ChatBotManageService {
 **/
     ApiResponse<List<Conversation>> getDetailConversation(Integer userId);
 
+    //analyze only one conversation
     ResponseEntity<ApiResponse<Conversation>> analyzeConversation(String conversationId);
 
     //xóa theo id conversation
-    ResponseEntity<ApiResponse<?>>  deleteConversation(String id);
+    ResponseEntity<ApiResponse<?>> deleteConversation(String id);
 
     String chat(ChatRequest request);
 
