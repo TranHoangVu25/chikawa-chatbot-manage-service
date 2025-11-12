@@ -40,7 +40,7 @@ public class ChatBotManageController {
     }
 
     //remove conversation
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<?>> deleteConversation(
             @PathVariable String id
     ){
@@ -78,4 +78,10 @@ public class ChatBotManageController {
                 .build();
     }
 
+    @GetMapping("/filter-status")
+    public List<Conversation> filterStatus(
+            @RequestParam(defaultValue = "0") Integer status
+    ){
+        return chatBotManageService.findByStatus(status);
+    }
 }

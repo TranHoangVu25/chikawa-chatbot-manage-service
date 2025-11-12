@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public interface ChatBotManageService {
@@ -31,4 +30,6 @@ public interface ChatBotManageService {
     String chat(ChatRequest request);
 
     ConversationStatsDTO getConversationStatistics();
+
+    List<Conversation> findByStatus(Integer status);
 }

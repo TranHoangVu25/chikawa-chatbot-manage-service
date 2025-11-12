@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -180,6 +181,18 @@ public class ChatBotServiceImpl implements ChatBotManageService{
                 stat.setDayOfWeek(dayOfWeek);
             });
             return dto;
+        }
+
+        @Override
+        public List<Conversation> findByStatus(Integer status){
+            List<Conversation> conversations = new ArrayList<>();
+        if (status == 0){
+            conversations = conversationRepository.findAll();
+        }
+        else {
+            conversations = conversationRepository.findByStatus(status);
+        }
+            return conversations;
         }
 }
 
