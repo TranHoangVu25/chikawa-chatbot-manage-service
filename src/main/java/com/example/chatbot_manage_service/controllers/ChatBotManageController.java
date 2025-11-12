@@ -1,5 +1,6 @@
 package com.example.chatbot_manage_service.controllers;
 
+import com.example.chatbot_manage_service.dto.ConversationStatsDTO;
 import com.example.chatbot_manage_service.dto.request.ChatRequest;
 import com.example.chatbot_manage_service.dto.response.ApiResponse;
 import com.example.chatbot_manage_service.models.Conversation;
@@ -24,11 +25,13 @@ public class ChatBotManageController {
     ChatBotManageService chatBotManageService;
     ConversationRepository conversationRepository;
 
+    //get all conservation
     @GetMapping
     public ApiResponse<List<Conversation>> getAllConversation(){
         return chatBotManageService.getAllConversation();
     }
 
+    //get all conversation follow user id
     @GetMapping("/detail/{userId}")
     public ApiResponse<List<Conversation>> getDetailConversation(
             @PathVariable Integer userId
@@ -36,6 +39,7 @@ public class ChatBotManageController {
         return chatBotManageService.getDetailConversation(userId);
     }
 
+    //remove conversation
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> deleteConversation(
             @PathVariable String id
@@ -48,25 +52,16 @@ public class ChatBotManageController {
         return chatBotManageService.chat(request);
     }
 
+    //analyze conversation with id
     @PostMapping("/analyze/{id}")
-    public ResponseEntity<?> analyzeConversation(@PathVariable String id) {
-        // 1️⃣ Kiểm tra tồn tại conversation
-        Conversation conversation = conversationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+    public ResponseEntity<ApiResponse<Conversation>> analyzeConversation(
+            @PathVariable String id
+    ) {
+       return chatBotManageService.analyzeConversation(id);
+    }
 
-        // 2️⃣ Gọi service để phân tích hội thoại (tự lưu DB bên trong)
-        int status = chatBotManageService.analyzeConversation(id);
-
-        // 3️⃣ Lấy lại dữ liệu sau khi cập nhật
-        conversation = conversationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Conversation not found after analysis"));
-
-        // 4️⃣ Trả về kết quả
-        return ResponseEntity.ok(Map.of(
-                "conversationId", conversation.getId(),
-                "status", status,
-                "analyzed", conversation.getAnalyzed(),
-                "message", (status == 2 ? "potential" : status == 3 ? "spam" : "undefined")
-        ));
+    @GetMapping("/statistic")
+    public ConversationStatsDTO getConversationStatistics(){
+        return chatBotManageService.getConversationStatistics();
     }
 }

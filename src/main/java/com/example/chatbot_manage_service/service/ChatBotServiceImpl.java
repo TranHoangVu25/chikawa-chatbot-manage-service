@@ -1,5 +1,6 @@
 package com.example.chatbot_manage_service.service;
 
+import com.example.chatbot_manage_service.dto.ConversationStatsDTO;
 import com.example.chatbot_manage_service.dto.request.ChatRequest;
 import com.example.chatbot_manage_service.dto.response.ApiResponse;
 import com.example.chatbot_manage_service.exception.ErrorCode;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -81,20 +83,30 @@ public class ChatBotServiceImpl implements ChatBotManageService{
     }
 
     @Override
-//    public Conversation analyzeConversation(String conversationId) {
-    public int analyzeConversation(String conversationId) {
+    public ResponseEntity<ApiResponse<Conversation>> analyzeConversation(String conversationId) {
+//    public int analyzeConversation(String conversationId) {
         int analyzed = 2;
+
+        if(!conversationRepository.existsById(conversationId)){
+            return ResponseEntity.status(ErrorCode.CONVERSATION_NOT_EXISTED.getHttpStatusCode())
+                    .body(ApiResponse.<Conversation>builder()
+                            .message(ErrorCode.CONVERSATION_NOT_EXISTED.getMessage())
+                            .build());
+        }
+
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new RuntimeException(ErrorCode.CONVERSATION_NOT_EXISTED.getMessage()));
 
         StringBuilder conversationText = new StringBuilder();
         if (conversation.getMessages() != null && !conversation.getMessages().isEmpty()) {
             for (Message msg : conversation.getMessages()) {
-                conversationText
-                        .append(msg.getSender())
-                        .append(": ")
-                        .append(msg.getContent())
-                        .append("\n");
+                if(msg.getSender().equals("user")){
+                    conversationText
+                            .append(msg.getSender())
+                            .append(": ")
+                            .append(msg.getContent())
+                            .append("\n");
+                }
             }
         } else {
             conversationText.append("(Content is null)");
@@ -129,8 +141,6 @@ public class ChatBotServiceImpl implements ChatBotManageService{
                 Do NOT include any explanation or extra text.
                 """;
 
-
-        // 🧩 2️⃣ Gửi prompt đến Gemini
         SystemMessage systemMessage = new SystemMessage("You are classification conversation system.");
         UserMessage userMessage = new UserMessage(promptText);
         Prompt prompt = new Prompt(systemMessage, userMessage);
@@ -150,12 +160,18 @@ public class ChatBotServiceImpl implements ChatBotManageService{
             status = 1; // fallback (undefine)
         }
 
-        // 📝 4️⃣ Cập nhật trạng thái hội thoại
-//        conversation.setStatus(status);
-//        conversation.setAnalyzed(analyzed); // đã phân tích
-//        conversationRepository.save(conversation);
+        conversation.setStatus(status);
+        conversation.setAnalyzed(analyzed);
 
-        return status;
+        return ResponseEntity.ok()
+                .body(ApiResponse.<Conversation>builder()
+                        .message("Analyzed successfully!")
+                        .result(conversationRepository.save(conversation))
+                        .build());
+    }
+
+    public ConversationStatsDTO getConversationStatistics(){
+        return conversationRepository.getConversationStatistics();
     }
 }
 

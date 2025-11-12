@@ -1,5 +1,6 @@
 package com.example.chatbot_manage_service.service;
 
+import com.example.chatbot_manage_service.dto.ConversationStatsDTO;
 import com.example.chatbot_manage_service.dto.request.ChatRequest;
 import com.example.chatbot_manage_service.dto.response.ApiResponse;
 import com.example.chatbot_manage_service.models.Conversation;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface ChatBotManageService {
@@ -20,10 +22,12 @@ public interface ChatBotManageService {
 **/
     ApiResponse<List<Conversation>> getDetailConversation(Integer userId);
 
-    int analyzeConversation(String conversationId);
+    ResponseEntity<ApiResponse<Conversation>> analyzeConversation(String conversationId);
 
     //xóa theo id conversation
     ResponseEntity<ApiResponse<?>>  deleteConversation(String id);
 
     String chat(ChatRequest request);
+
+    ConversationStatsDTO getConversationStatistics();
 }
